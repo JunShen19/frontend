@@ -18,7 +18,7 @@ function App() {
     postInput(inputText);
   };
   const postInput = (string) => {
-    axios.post("/", { review: string }).then((res) => {
+    axios.post("/", { content: string }).then((res) => {
       setData(res.data.result);
       console.log(res.data.result);
     });
