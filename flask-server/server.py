@@ -1,8 +1,9 @@
 import flask
 import pickle
 import pandas as pd
+from flask import jsonify
 
-# Use pickle to load in the spre-trained model.
+# Use pickle to load in the trained model.
 with open(f'../movie_reviews_sentiment_analysis.pkl', 'rb') as f:
     model = pickle.load(f)
 
@@ -18,23 +19,26 @@ app = flask.Flask(__name__)
 @app.route('/', methods=['GET', 'POST'])
 def main():
     if flask.request.method == 'GET':
-        return flask.render_template('./index.html')
+        return jsonify({'message': 'Welcome to the API'})
 
     if flask.request.method == 'POST':
-        # 從前端的 JSON 數據中獲取 review 和 movie
-        data_from_frontend = flask.request.get_json()
-        review = data_from_frontend.get('review', '')
+        try:
+            data_from_frontend = flask.request.get_json()
+            content = data_from_frontend['content']
+        except KeyError:
+            return jsonify({'error': 'Invalid input'})
 
-        # 執行預測
-        prediction = model.predict(vectorizer.transform([review]))
+        # prediction
+        prediction = model.predict(vectorizer.transform([content]))
 
-        # 返回 JSON 數據給前端
+        # return JSON to frontend
         result = {
-            'predict_text': "Prediction sentiment for movie: ",
-            'result': prediction.tolist()  # 將 NumPy array 轉換為 Python list
+            'predict_text': "Prediction sentiment for content: ",
+            'result': prediction.tolist()
         }
 
-        return result
+        return jsonify(result)
+    
 # Running app
 if __name__ == '__main__':
     app.run(debug=True)
