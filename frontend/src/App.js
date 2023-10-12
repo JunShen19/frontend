@@ -9,12 +9,13 @@ function App() {
   const [inputText, setInputText] = useState("");
   const [chatBubble, setChatBubble] = useState([]);
   const [submittedText, setSubmittedText] = useState("");
+  const [isValid, setIsValid] = useState(true);
+  const scrollableDivRef = useRef();
 
   const didMount = useRef(false);
 
   useEffect(() => {
     if (didMount.current) {
-      console.log("re-render because result changed:", result);
       addChatBubble(submittedText, result);
       setInputText("");
     } else didMount.current = true;
@@ -34,10 +35,18 @@ function App() {
   const handleInputChange = (event) => {
     setInputText(event.target.value);
   };
+
   const handleSubmit = (event) => {
     event.preventDefault();
     setSubmittedText(inputText);
-    postInput(inputText);
+    const isValidInput = /^[a-zA-Z0-9]+$/.test(inputText);
+    if (isValidInput) {
+      postInput(inputText);
+      setIsValid(true);
+    } else {
+      setIsValid(false);
+      setInputText("");
+    }
   };
   const postInput = (content) => {
     axios.post("/", { content: content }).then((res) => {
@@ -56,19 +65,25 @@ function App() {
         </div>
 
         <div className="form-control w-full max-w-xs mx-auto my-auto rounded-lg p-2 border-2">
-          <div className="chat-container border-2 rounded-lg p-2">
+          <div
+            ref={scrollableDivRef}
+            className="chat-container border-2 rounded-lg p-2 h-80 overflow-auto will-change-auto flex flex-col-reverse overflow-y-scroll"
+          >
+            <div className="flex flex-col">{chatBubble}</div>
             <div className="chat chat-start">
               <div className="chat-bubble">What is your content?</div>
             </div>
-            {chatBubble}
           </div>
           <form onSubmit={handleSubmit} className="join">
             <input
               type="text"
-              placeholder="Type here"
-              className="input input-bordered join-item"
+              placeholder={!isValid ? "Please input English" : "Type here"}
+              className={`input input-bordered join-item ${
+                isValid ? "" : "placeholder-red-500 bg-red-100"
+              }`}
               value={inputText}
               onChange={handleInputChange}
+              required
             />
             <button className="btn join-item rounded-r-full" type="submit">
               <svg
