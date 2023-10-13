@@ -2,6 +2,7 @@ import flask
 import pickle
 import pandas as pd
 from flask import jsonify
+from flask_cors import CORS
 
 # Use pickle to load in the trained model.
 with open(f'../movie_reviews_sentiment_analysis.pkl', 'rb') as f:
@@ -14,7 +15,7 @@ with open(f'../vectorizer.pkl', 'rb') as f:
 
 
 app = flask.Flask(__name__)
- 
+CORS(app, resources={r"/*": {"origins": "https://https-github-com-junshen19-sentiment-zbb4.onrender.com/"}})
  
 @app.route('/', methods=['GET', 'POST'])
 def main():
