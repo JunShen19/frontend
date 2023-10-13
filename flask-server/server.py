@@ -15,7 +15,7 @@ with open(f'../vectorizer.pkl', 'rb') as f:
 
 
 app = flask.Flask(__name__)
-CORS(app, resources={r"/*": {"origins": "https://https-github-com-junshen19-sentiment-zbb4.onrender.com/"}})
+CORS(app, resources={r"/*": {"origins": "*"}})
  
 @app.route('/', methods=['GET', 'POST'])
 def main():
