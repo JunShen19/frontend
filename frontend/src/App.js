@@ -19,6 +19,7 @@ function App() {
       addChatBubble(submittedText, result);
       setInputText("");
     } else didMount.current = true;
+    // eslint-disable-next-line
   }, [result]);
 
   const addChatBubble = (content, result) => {
