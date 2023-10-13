@@ -50,7 +50,11 @@ function App() {
     }
   };
   const postInput = (content) => {
-    axios.post("/", { content: content }).then((res) => {
+    const rootUrl =
+      process.env.NODE_ENV === "production"
+        ? "https://https-github-com-junshen19-sentiment.onrender.com"
+        : "";
+    axios.post(`${rootUrl}/`, { content: content }).then((res) => {
       setResult(res.data.result);
     });
   };
