@@ -40,7 +40,8 @@ function App() {
   const handleSubmit = (event) => {
     event.preventDefault();
     setSubmittedText(inputText);
-    const isValidInput = /^[a-zA-Z0-9]+$/.test(inputText);
+    const isValidInput =
+      /^[a-zA-Z0-9\s]+$/.test(inputText) && inputText.trim() !== "";
     if (isValidInput) {
       postInput(inputText);
       setIsValid(true);
