@@ -1,66 +1,20 @@
+// App.js
+import React from "react";
 import "./App.css";
-import axios from "axios";
-import { useState, useEffect, useRef } from "react";
-import UserChat from "./components/UserChat";
-import MachineChatBubble from "./components/MachineChatBubble";
+import ChatForm from "./components/ChatForm";
+import { useChat } from "./functions/chatFunctions";
 
 function App() {
-  const [result, setResult] = useState("");
-  const [inputText, setInputText] = useState("");
-  const [chatBubble, setChatBubble] = useState([]);
-  const [submittedText, setSubmittedText] = useState("");
-  const [isValid, setIsValid] = useState(true);
-  const scrollableDivRef = useRef();
-
-  const didMount = useRef(false);
-
-  useEffect(() => {
-    if (didMount.current) {
-      addChatBubble(submittedText, result);
-      setInputText("");
-    } else didMount.current = true;
-    // eslint-disable-next-line
-  }, [result]);
-
-  const addChatBubble = (content, result) => {
-    const index = chatBubble.length;
-    setChatBubble([
-      ...chatBubble,
-      <div key={index}>
-        <UserChat text={content} />
-        <MachineChatBubble result={result} />
-      </div>,
-    ]);
-  };
-
-  const handleInputChange = (event) => {
-    setInputText(event.target.value);
-  };
-
-  const handleSubmit = (event) => {
-    event.preventDefault();
-    setSubmittedText(inputText);
-    const isValidInput =
-      /^(?=.*[a-zA-Z])(?=.*\d)[a-zA-Z0-9\s]+$/.test(inputText) &&
-      inputText.trim() !== "";
-
-    if (isValidInput) {
-      postInput(inputText);
-      setIsValid(true);
-    } else {
-      setIsValid(false);
-      setInputText("");
-    }
-  };
-  const postInput = (content) => {
-    const rootUrl =
-      process.env.NODE_ENV === "production"
-        ? "https://https-github-com-junshen19-sentiment.onrender.com"
-        : "";
-    axios.post(`${rootUrl}/`, { content: content }).then((res) => {
-      setResult(res.data.result);
-    });
-  };
+  const {
+    result,
+    inputText,
+    chatBubble,
+    submittedText,
+    isValid,
+    scrollableDivRef,
+    handleInputChange,
+    handleSubmit,
+  } = useChat();
 
   return (
     <div className="hero min-h-screen">
@@ -82,34 +36,12 @@ function App() {
               <div className="chat-bubble">What is your content?</div>
             </div>
           </div>
-          <form onSubmit={handleSubmit} className="join">
-            <input
-              type="text"
-              placeholder={!isValid ? "Please input English" : "Type here"}
-              className={`input input-bordered join-item ${
-                isValid ? "" : "placeholder-red-500 bg-red-100"
-              }`}
-              value={inputText}
-              onChange={handleInputChange}
-              required
-            />
-            <button className="btn join-item rounded-r-full" type="submit">
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                width="24"
-                height="24"
-                viewBox="0 0 24 24"
-                fill="none"
-                stroke="currentColor"
-                strokeWidth="2"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-              >
-                <path d="M10 9l-6 6 6 6" />
-                <path d="M20 4v7a4 4 0 0 1-4 4H5" />
-              </svg>
-            </button>
-          </form>
+          <ChatForm
+            isValid={isValid}
+            inputText={inputText}
+            handleInputChange={handleInputChange}
+            handleSubmit={handleSubmit}
+          />
         </div>
       </div>
     </div>
